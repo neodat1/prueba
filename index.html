@@ -1,26 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>Encuesta de Satisfacción</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      padding: 20px;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      margin: auto;
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      margin-bottom: 15px;
+    }
+    button {
+      padding: 10px 15px;
+    }
+  </style>
 </head>
 <body>
-  <h2>Encuesta de Satisfacción</h2>
+  <h2 style="text-align: center;">Encuesta de Satisfacción</h2>
   <form id="surveyForm">
     <label>Nombre:
       <input type="text" name="nombre" required>
-    </label><br><br>
+    </label>
 
     <label>Edad:
       <input type="number" name="edad" required>
-    </label><br><br>
+    </label>
 
     <label>¿Está satisfecho con el servicio?
       <select name="satisfaccion" required>
         <option value="Sí">Sí</option>
         <option value="No">No</option>
       </select>
-    </label><br><br>
+    </label>
 
     <button type="submit">Enviar</button>
   </form>
@@ -30,27 +57,23 @@
       e.preventDefault();
 
       const formData = new FormData(this);
-      const data = {};
-      formData.forEach((value, key) => data[key] = value);
+      const params = new URLSearchParams();
+      formData.forEach((value, key) => params.append(key, value));
 
-      fetch('https://script.google.com/macros/s/AKfycbyjx5OLeRAvoq7EAawzRX3sLxeDubAtbZ3A2V1Ufc3YStvGRI6u9uFKNC85J7aNO9CoOQ/exec', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+      fetch('https://script.google.com/macros/s/AKfycbyjx5OLeRAvoq7EAawzRX3sLxeDubAtbZ3A2V1Ufc3YStvGRI6u9uFKNC85J7aNO9CoOQ/exec?' + params.toString(), {
+        method: 'GET'
       })
       .then(response => {
         if (response.ok) {
           alert('Respuesta enviada correctamente');
           document.getElementById('surveyForm').reset();
         } else {
-          alert('Error al enviar. Intente nuevamente.');
+          alert('Error al enviar.');
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('Error de red o en el servidor.');
+        alert('Error de red o del servidor.');
       });
     });
   </script>
