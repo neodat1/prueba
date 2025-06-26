@@ -1,39 +1,58 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Encuesta</title>
+  <meta charset="UTF-8">
+  <title>Encuesta de Satisfacción</title>
 </head>
 <body>
-    <h1>Encuesta: ¿Cuál es tu lenguaje de programación favorito?</h1>
-    <form id="survey-form">
-        <label><input type="radio" name="language" value="Python" required> Python</label><br>
-        <label><input type="radio" name="language" value="JavaScript"> JavaScript</label><br>
-        <label><input type="radio" name="language" value="Java"> Java</label><br>
-        <label><input type="radio" name="language" value="Otros"> Otros</label><br><br>
-        <button type="submit">Enviar</button>
-    </form>
-    <p id="result"></p>
+  <h2>Encuesta de Satisfacción</h2>
+  <form id="surveyForm">
+    <label>Nombre:
+      <input type="text" name="nombre" required>
+    </label><br><br>
 
-    <script>
-        document.getElementById("survey-form").addEventListener("submit", function(e) {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const selected = formData.get("language");
+    <label>Edad:
+      <input type="number" name="edad" required>
+    </label><br><br>
 
-            fetch("http://localhost:5000/submit", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ language: selected })
-            })
-            .then(res => res.ok ? res.json() : Promise.reject("Error"))
-            .then(data => {
-                document.getElementById("result").textContent = "Respuesta enviada.";
-            })
-            .catch(() => {
-                document.getElementById("result").textContent = "Error al enviar la respuesta.";
-            });
-        });
-    </script>
+    <label>¿Está satisfecho con el servicio?
+      <select name="satisfaccion" required>
+        <option value="Sí">Sí</option>
+        <option value="No">No</option>
+      </select>
+    </label><br><br>
+
+    <button type="submit">Enviar</button>
+  </form>
+
+  <script>
+    document.getElementById('surveyForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const data = {};
+      formData.forEach((value, key) => data[key] = value);
+
+      fetch('https://script.google.com/macros/s/AKfycbyjx5OLeRAvoq7EAawzRX3sLxeDubAtbZ3A2V1Ufc3YStvGRI6u9uFKNC85J7aNO9CoOQ/exec', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Respuesta enviada correctamente');
+          document.getElementById('surveyForm').reset();
+        } else {
+          alert('Error al enviar. Intente nuevamente.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error de red o en el servidor.');
+      });
+    });
+  </script>
 </body>
 </html>
