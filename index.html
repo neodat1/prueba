@@ -21,14 +21,18 @@
             const formData = new FormData(e.target);
             const selected = formData.get("language");
 
-            fetch("http://localhost:8080/kettle/executeTrans?trans=encuesta", {
+            fetch("http://localhost:5000/submit", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ language: selected })
             })
-            .then(res => res.ok ? res.text() : Promise.reject("Error"))
-            .then(data => document.getElementById("result").textContent = "Respuesta enviada.")
-            .catch(() => document.getElementById("result").textContent = "Error al enviar la respuesta.");
+            .then(res => res.ok ? res.json() : Promise.reject("Error"))
+            .then(data => {
+                document.getElementById("result").textContent = "Respuesta enviada.";
+            })
+            .catch(() => {
+                document.getElementById("result").textContent = "Error al enviar la respuesta.";
+            });
         });
     </script>
 </body>
