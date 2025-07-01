@@ -2,50 +2,129 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Agenda de Contactos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta Simple</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-survey {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .question-card {
+            transition: all 0.3s ease;
+        }
+        .question-card:hover {
+            transform: translateY(-5px);
+        }
+        .submit-btn {
+            transition: all 0.3s ease;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
 </head>
-<body>
-    <h1>Agregar Contacto</h1>
-    <form id="contactoForm">
-        <label>Nombre: <input type="text" id="nombre" required></label><br>
-        <label>Correo: <input type="email" id="correo" required></label><br>
-        <label>Teléfono: <input type="text" id="telefono" required></label><br>
-        <label>Dirección: <input type="text" id="direccion" required></label><br>
-        <button type="submit">Guardar</button>
-    </form>
-    <div id="resultado"></div>
+<body class="bg-survey min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <div class="bg-white rounded-lg card p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Encuesta Simple</h1>
+                <p class="text-gray-600">Tu opinión es importante para nosotros</p>
+            </div>
+
+            <form id="surveyForm" class="space-y-6">
+                <!-- Pregunta 1 -->
+                <div class="question-card bg-gray-50 rounded-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">1. ¿Cómo calificarías nuestro servicio?</h2>
+                    <div class="space-y-3">
+                        <label class="flex items-center space-x-3">
+                            <input type="radio" name="serviceRating" value="excelente" class="h-5 w-5 text-indigo-600">
+                            <span class="text-gray-700">Excelente</span>
+                        </label>
+                        <label class="flex items-center space-x-3">
+                            <input type="radio" name="serviceRating" value="bueno" class="h-5 w-5 text-indigo-600">
+                            <span class="text-gray-700">Bueno</span>
+                        </label>
+                        <label class="flex items-center space-x-3">
+                            <input type="radio" name="serviceRating" value="regular" class="h-5 w-5 text-indigo-600">
+                            <span class="text-gray-700">Regular</span>
+                        </label>
+                        <label class="flex items-center space-x-3">
+                            <input type="radio" name="serviceRating" value="malo" class="h-5 w-5 text-indigo-600">
+                            <span class="text-gray-700">Malo</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Pregunta 2 -->
+                <div class="question-card bg-gray-50 rounded-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">2. ¿Qué tanto te gustaría recomendarnos?</h2>
+                    <div class="space-y-3">
+                        <label class="flex items-center space-x-3">
+                            <input type="radio" name="recommendation" value="definitivamente" class="h-5 w-5 text-indigo-600">
+                            <span class="text-gray-700">Definitivamente</span>
+                        </label>
+                        <label class="flex items-center space-x-3">
+                            <input type="radio" name="recommendation" value="probablemente" class="h-5 w-5 text-indigo-600">
+                            <span class="text-gray-700">Probablemente</span>
+                        </label>
+                        <label class="flex items-center space-x-3">
+                            <input type="radio" name="recommendation" value="neutral" class="h-5 w-5 text-indigo-600">
+                            <span class="text-gray-700">Neutral</span>
+                        </label>
+                        <label class="flex items-center space-x-3">
+                            <input type="radio" name="recommendation" value="no" class="h-5 w-5 text-indigo-600">
+                            <span class="text-gray-700">No lo recomendaría</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg">
+                    Enviar Encuesta
+                </button>
+            </form>
+        </div>
+    </div>
 
     <script>
-        document.getElementById('contactoForm').addEventListener('submit', async function(e) {
+        document.getElementById('surveyForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-
-            const datos = {
-                nombre: document.getElementById('nombre').value,
-                correo: document.getElementById('correo').value,
-                telefono: document.getElementById('telefono').value,
-                direccion: document.getElementById('direccion').value
+            
+            const formData = {
+                serviceRating: document.querySelector('input[name="serviceRating"]:checked')?.value,
+                recommendation: document.querySelector('input[name="recommendation"]:checked')?.value,
+                timestamp: new Date().toISOString()
             };
 
-            // Cambie la URL por la de su backend real (debe estar accesible públicamente para funcionar en GitHub Pages)
-            const url = "http://localhost:3000/contactos";
+            if (!formData.serviceRating || !formData.recommendation) {
+                alert('Por favor responde ambas preguntas');
+                return;
+            }
 
             try {
-                const resp = await fetch(url, {
+                const response = await fetch('http://localhost:3000/api/survey', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(datos)
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
                 });
 
-                if (resp.ok) {
-                    document.getElementById('resultado').innerText = "Contacto guardado correctamente.";
-                    document.getElementById('contactoForm').reset();
+                if (response.ok) {
+                    alert('¡Gracias por completar nuestra encuesta!');
+                    this.reset();
                 } else {
-                    document.getElementById('resultado').innerText = "Error al guardar.";
+                    throw new Error('Error al enviar la encuesta');
                 }
-            } catch (err) {
-                document.getElementById('resultado').innerText = "Error de conexión.";
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Hubo un problema al enviar la encuesta. Por favor intenta nuevamente.');
             }
         });
     </script>
 </body>
 </html>
+
